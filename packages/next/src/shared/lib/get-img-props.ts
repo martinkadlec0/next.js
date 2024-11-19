@@ -138,7 +138,7 @@ function getInt(x: unknown): number | undefined {
 }
 
 function getWidths(
-  { deviceSizes, allSizes }: ImageConfig,
+  { deviceSizes, allSizes, densities }: ImageConfig,
   width: number | undefined,
   sizes: string | undefined
 ): { widths: number[]; kind: 'w' | 'x' } {
@@ -172,8 +172,8 @@ function getWidths(
       // > wasteful as the human eye cannot see that level of detail without
       // > something like a magnifying glass.
       // https://blog.twitter.com/engineering/en_us/topics/infrastructure/2019/capping-image-fidelity-on-ultra-high-resolution-devices.html
-      [width, width * 2 /*, width * 3*/].map(
-        (w) => allSizes.find((p) => p >= w) || allSizes[allSizes.length - 1]
+      densities.map(
+        (density) => allSizes.find((p) => p >= density * width) || allSizes[allSizes.length - 1]
       )
     ),
   ]
@@ -211,6 +211,7 @@ function generateImgAttrs({
 
   const { widths, kind } = getWidths(config, width, sizes)
   const last = widths.length - 1
+  const { densities } = config
 
   return {
     sizes: !sizes && kind === 'w' ? '100vw' : sizes,
@@ -218,7 +219,7 @@ function generateImgAttrs({
       .map(
         (w, i) =>
           `${loader({ config, src, quality, width: w })} ${
-            kind === 'w' ? w : i + 1
+            kind === 'w' ? w : densities[i]
           }${kind}`
       )
       .join(', '),
@@ -286,7 +287,8 @@ export function getImgProps(
   } else {
     const allSizes = [...c.deviceSizes, ...c.imageSizes].sort((a, b) => a - b)
     const deviceSizes = c.deviceSizes.sort((a, b) => a - b)
-    config = { ...c, allSizes, deviceSizes }
+    const densities = c.densities.sort((a, b) => a - b)
+    config = { ...c, allSizes, deviceSizes, densities }
   }
 
   if (typeof defaultLoader === 'undefined') {

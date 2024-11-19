@@ -529,6 +529,10 @@ export const configSchema: zod.ZodType<NextConfig> = z.lazy(() =>
           .array(z.number().int().gte(1).lte(10000))
           .max(25)
           .optional(),
+        densities: z
+          .array(z.number().gte(0).lte(10))
+          .max(25)
+          .optional(),
         disableStaticImages: z.boolean().optional(),
         domains: z.array(z.string()).max(50).optional(),
         formats: z

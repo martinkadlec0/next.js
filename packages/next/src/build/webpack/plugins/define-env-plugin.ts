@@ -109,6 +109,7 @@ function getImageConfig(
     'process.env.__NEXT_IMAGE_OPTS': {
       deviceSizes: config.images.deviceSizes,
       imageSizes: config.images.imageSizes,
+      densities: config.images.densities,
       path: config.images.path,
       loader: config.images.loader,
       dangerouslyAllowSVG: config.images.dangerouslyAllowSVG,
